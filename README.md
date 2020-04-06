@@ -31,3 +31,7 @@
 */ri*
 - Command to toggle visual reinforcement aid, without having to have the reinforcer block in-hand
 - Permission: Reinforced.ri
+
+## GIFs of the plugin:
+![GIF 1](https://github.com/trevorzucker/Reinforcement/raw/master/gif/demo1.gif)
+![GIF 2](https://github.com/trevorzucker/Reinforcement/raw/master/gif/demo2.gif)
