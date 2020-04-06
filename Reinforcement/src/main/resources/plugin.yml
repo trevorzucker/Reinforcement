@@ -1,0 +1,10 @@
+main: codes.zucker.Reinforcement.Main
+name: Reinforcement
+version: 1.0
+api-version: 1.15
+commands:
+  ri:
+    description: Toggles viewing of reinforced blocks
+    usage: /ri
+    permission: Reinforced.ri
+    permission-message: You don't have permission for that.

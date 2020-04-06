@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <copy file="c:\Users\trevor\Desktop\minecraft\Reinforcement\Reinforcement\Reinforcement/target/Reinforcement-1.0.jar" tofile="C:/Users/trevor/Desktop/minecraft/test server/1.15.2/plugins/Reinforcement-1.0.jar"/>
+</target>
+</project>
