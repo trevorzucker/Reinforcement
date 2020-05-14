@@ -29,7 +29,7 @@ class DataLoader { // ConfigurationLoader, DataLoader, and LangLoader all work t
         config = YamlConfiguration.loadConfiguration(dataFile);
         for (String coords : config.getKeys(false)) {
             String breaksLeft = config.getString(coords);
-            String[] locStr = coords.split("_");
+            String[] locStr = coords.split(":");
             Location loc = new Location(Bukkit.getWorld(locStr[0]), Double.parseDouble(locStr[1]), Double.parseDouble(locStr[2]), Double.parseDouble(locStr[3]));
             new ReinforcedBlock(loc.getBlock(), Integer.parseInt(breaksLeft));
             DataValues.put(coords, breaksLeft);
@@ -40,7 +40,7 @@ class DataLoader { // ConfigurationLoader, DataLoader, and LangLoader all work t
 
         for (Entry<Location, ReinforcedBlock> entry : ReinforcedBlock.list.entrySet()) {
             Location location = entry.getKey();
-            String loc = location.getWorld().getName() + "_" + location.getBlockX() + "_" + location.getBlockY() + "_" + location.getBlockZ();
+            String loc = location.getWorld().getName() + ":" + location.getBlockX() + ":" + location.getBlockY() + ":" + location.getBlockZ();
             String val = entry.getValue().GetBreaksLeft() + "";
             config.set(loc, val);
         }
