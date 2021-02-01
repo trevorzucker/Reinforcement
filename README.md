@@ -6,6 +6,10 @@
 
   The premise of the plugin is simple: reinforcing a block with another.
 
+  Demo video:
+  
+  [![Demo video](https://img.youtube.com/vi/CzVk9OmW9uI/0.jpg)](https://www.youtube.com/watch?v=CzVk9OmW9uI "Demo video")
+
 ### Features:
 
   - Highly customizable configuration file
