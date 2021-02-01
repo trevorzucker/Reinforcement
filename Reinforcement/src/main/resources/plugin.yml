@@ -1,7 +1,7 @@
 main: codes.zucker.Reinforcement.Main
 name: Reinforcement
 version: 1.0
-api-version: 1.15
+api-version: 1.16
 commands:
   ri:
     description: Toggles viewing of reinforced blocks
