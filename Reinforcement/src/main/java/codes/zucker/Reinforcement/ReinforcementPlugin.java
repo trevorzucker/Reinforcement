@@ -1,4 +1,4 @@
-package codes.zucker.Reinforcement;
+package codes.zucker.reinforcement;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,44 +10,42 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import codes.zucker.Reinforcement.entity.Hologram;
-import codes.zucker.Reinforcement.util.CommandHelper;
-import codes.zucker.Reinforcement.util.ConfigurationYaml;
-import codes.zucker.Reinforcement.util.DataYaml;
-import codes.zucker.Reinforcement.util.LOG;
-import codes.zucker.Reinforcement.util.LangYaml;
+import codes.zucker.reinforcement.entity.Hologram;
+import codes.zucker.reinforcement.util.CommandHelper;
+import codes.zucker.reinforcement.util.ConfigurationYaml;
+import codes.zucker.reinforcement.util.DataYaml;
+import codes.zucker.reinforcement.util.LOG;
+import codes.zucker.reinforcement.util.LangYaml;
 
 public class ReinforcementPlugin extends JavaPlugin
 {    
 
     @Override
     public void onEnable() {
-        ConfigurationYaml.LoadConfigurationFile();
+        ConfigurationYaml.loadConfigurationFile();
 
-        ConfigurationYaml.GetList("reinforcement_blocks").forEach(i -> {
+        ConfigurationYaml.getList("reinforcement_blocks").forEach(i -> {
             List<?> entry = ((ArrayList<?>)i);
             Material material = Material.getMaterial((String)entry.get(0));
             int breaks = (int)entry.get(1);
             int max = (int)entry.get(2);
             ReinforceMaterial reinforceMaterial = new ReinforceMaterial(material, breaks, max);
-            ReinforceMaterial.Entries.add(reinforceMaterial);
+            ReinforceMaterial.entries.add(reinforceMaterial);
         });
 
-        LangYaml.LoadLang();
-        DataYaml.LoadDataFile();
+        LangYaml.loadLang();
+        DataYaml.loadDataFile();
 
         getServer().getPluginManager().registerEvents(new Events(), this);
 
-        CommandHelper.RegisterCommand("ri", "riCommand");
-        CommandHelper.RegisterCommand("re", "reCommand");
+        CommandHelper.registerCommand("rv", "rvCommand");
+        CommandHelper.registerCommand("re", "reCommand");
     }
     
     @Override
     public void onDisable() {
-        DataYaml.SaveDataFile();
-        Hologram.holograms.forEach(i -> {
-            i.Destroy();
-        });
+        DataYaml.saveDataFile();
+        Hologram.holograms.forEach(Hologram::destroyHologram);
     }
 
     @Override

@@ -6,8 +6,8 @@
 
 # Maven files
 pom_local.xml
-.classpath
-.project
+*classpath
+*.project
 
 # VSCode stuff
 .settings/
@@ -21,6 +21,7 @@ pom_local.xml
 *.zip
 *.tar.gz
 *.rar
+target/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*

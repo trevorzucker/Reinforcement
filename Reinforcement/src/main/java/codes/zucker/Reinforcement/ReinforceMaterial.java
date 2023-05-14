@@ -1,4 +1,4 @@
-package codes.zucker.Reinforcement;
+package codes.zucker.reinforcement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.Material;
 
 public class ReinforceMaterial {
-    public static List<ReinforceMaterial> Entries = new ArrayList<>();
+    protected static List<ReinforceMaterial> entries = new ArrayList<>();
 
     private Material material;
     private int breaksPerReinforce;
@@ -30,16 +30,16 @@ public class ReinforceMaterial {
         return maxAllowedBreaks;
     }
 
-    public static ReinforceMaterial GetFromMaterial(Material material) {
-        for(ReinforceMaterial reinforceMaterial : Entries) {
+    public static ReinforceMaterial getFromMaterial(Material material) {
+        for(ReinforceMaterial reinforceMaterial : entries) {
             if (reinforceMaterial.material.name().equals(material.name()))
                 return reinforceMaterial;
         }
         return null;
     }
 
-    public static ReinforceMaterial GetFromMaterial(String material) {
+    public static ReinforceMaterial getFromMaterial(String material) {
         Material m = Material.getMaterial(material);
-        return GetFromMaterial(m);
+        return getFromMaterial(m);
     }
 }

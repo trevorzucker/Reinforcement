@@ -1,4 +1,4 @@
-package codes.zucker.Reinforcement.util;
+package codes.zucker.reinforcement.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class Utils { // some nice utils
         return playerList;
     }
 
-    public static void RemoveFromHand(PlayerInventory i, Material item, int quantity) {
+    public static void removeFromHand(PlayerInventory i, Material item, int quantity) {
         ItemStack hand = i.getItemInMainHand();
         if (hand.getType().equals(item)) {
             hand.setAmount(hand.getAmount() - quantity);
@@ -53,7 +53,7 @@ public class Utils { // some nice utils
     }
 
     
-    static Material[] NeighborBlacklist = new Material[] {
+    static Material[] neighborBlacklist = new Material[] {
         Material.WATER,
         Material.LAVA,
         Material.CAVE_AIR,
@@ -63,20 +63,18 @@ public class Utils { // some nice utils
 
     // checks against the given block and it's offset to see if there's a block in it's place
     // helpful for optimizing ReinforcedBlock's armor stands, so we only display on sides that are visible
-    public static boolean HasNeighbor(Block b, Vector offset) {
+    public static boolean hasNeighbor(Block b, Vector offset) {
         Location l = b.getLocation().clone();
         l.add(offset);
         Block neighbor = l.getBlock();
-        String xyz = b.getLocation().getX() + ", " + b.getLocation().getY() + ", " + b.getLocation().getZ();
-        String xyzL = l.getX() + ", " + l.getY() + ", " + l.getZ();
-        for(Material m : NeighborBlacklist) {
+        for(Material m : neighborBlacklist) {
             if (m.equals(neighbor.getType()))
-            return false;
+                return false;
         }
         return true;
     }
 
-    static Vector[] NeighborOffsets = new Vector[] {
+    static Vector[] neighborOffsets = new Vector[] {
         new Vector(1, 0, 0),
         new Vector(-1, 0, 0),
         new Vector(0, 1, 0),
@@ -101,13 +99,13 @@ public class Utils { // some nice utils
 
     // gets the vector of the given block's closest face to the given location
     // this is used in conjunction with HasNeighbor to return the closest VISIBLE side.
-    public static Vector GetClosestBlockFaceToLocationVisible(Location loc, Location src) {
+    public static Vector getClosestBlockFaceToLocationVisible(Location loc, Location src) {
         Location bCenter = src.clone(); bCenter.add(0.5f, 0.5f, 0.5f);
         Vector closestFace = faceOffsets[0];
         double closestDist = Double.MAX_VALUE;
         for(int i = 0; i < 6; i++) {
-            Vector offset = NeighborOffsets[i].clone();
-            if (HasNeighbor(src.getBlock(), offset)) {
+            Vector offset = neighborOffsets[i].clone();
+            if (hasNeighbor(src.getBlock(), offset)) {
                 continue;
             }
             Location face = bCenter.clone(); face.add(faceOffsets[i]);
@@ -120,11 +118,11 @@ public class Utils { // some nice utils
         return closestFace;
     }
 
-    public static void SendMessage(Player p, String message) {
-        p.sendMessage(ChatColor.GREEN + LangYaml.GetString("reinforcement_message_prefix") + " " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', message));
+    public static void sendMessage(Player p, String message) {
+        p.sendMessage(ChatColor.GREEN + LangYaml.getString("reinforcement_message_prefix") + " " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', message));
     }
 
-    public static String GreenToRed(String content, int value, int max) {
+    public static String greenToRed(String content, int value, int max) {
         ChatColor color = ChatColor.RED;
         if (value > max * 0.75f)
             color = ChatColor.GREEN;

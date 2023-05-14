@@ -1,4 +1,4 @@
-package codes.zucker.Reinforcement.util;
+package codes.zucker.reinforcement.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,26 +13,27 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import codes.zucker.Reinforcement.ReinforceMaterial;
-import codes.zucker.Reinforcement.ReinforcementPlugin;
-import codes.zucker.Reinforcement.entity.ReinforcedBlock;
+import codes.zucker.reinforcement.ReinforceMaterial;
+import codes.zucker.reinforcement.ReinforcementPlugin;
+import codes.zucker.reinforcement.entity.ReinforcedBlock;
 
 public class DataYaml { // ConfigurationLoader, DataLoader, and LangLoader all work the same.
 
     static File dataFile;
     static YamlConfiguration config;
 
-    public static void CreateFile() {
-        dataFile = new File(ReinforcementPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder() + "/data.yml");
+    public static void createFile() {
+        dataFile = new File(JavaPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder() + "/data.yml");
         if (!dataFile.exists())
             try {
                 dataFile.createNewFile();
-            } catch (IOException e) { }
+            } catch (IOException e) { LOG.severe("Failed to create data file; {}", e); }
     }
 
-    public static void LoadDataFile() {
-        CreateFile();
+    public static void loadDataFile() {
+        createFile();
         config = YamlConfiguration.loadConfiguration(dataFile);
         for (String world : config.getKeys(false)) {
             ConfigurationSection worldConf = config.getConfigurationSection(world);
@@ -57,12 +58,12 @@ public class DataYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
                 String[] data = dataSet.getValue().split(", ");
                 Location location = new Location(Bukkit.getWorld(world), Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2]));
                 UUID owner = UUID.fromString(data[2]);
-                new ReinforcedBlock(location, Integer.parseInt(data[0]), ReinforceMaterial.GetFromMaterial(data[1]), owner);
+                new ReinforcedBlock(location, Integer.parseInt(data[0]), ReinforceMaterial.getFromMaterial(data[1]), owner);
             }
         }
     }
 
-    public static void SaveDataFile() {
+    public static void saveDataFile() {
 
         Set<String> worlds = new HashSet<>();
 
@@ -87,6 +88,6 @@ public class DataYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
             config.set(world, worldBlocks);
         }
 
-        try { config.save(dataFile); } catch (IOException e) { }
+        try { config.save(dataFile); } catch (IOException e) { LOG.severe("Failed to save data file; {}", e); }
     }
 }

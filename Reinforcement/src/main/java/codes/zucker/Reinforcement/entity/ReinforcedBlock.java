@@ -1,4 +1,4 @@
-package codes.zucker.Reinforcement.entity;
+package codes.zucker.reinforcement.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,9 +14,9 @@ import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import codes.zucker.Reinforcement.ReinforceMaterial;
-import codes.zucker.Reinforcement.util.ConfigurationYaml;
-import codes.zucker.Reinforcement.util.Utils;
+import codes.zucker.reinforcement.ReinforceMaterial;
+import codes.zucker.reinforcement.util.ConfigurationYaml;
+import codes.zucker.reinforcement.util.Utils;
 
 public class ReinforcedBlock {
 
@@ -41,38 +41,33 @@ public class ReinforcedBlock {
         hologram = new Hologram(blockLocation, materialUsed.getMaterial());
         this.owner = owner;
 
-        DisplayNearest(src);
+        displayNearest(src);
     }
     
-    public static ReinforcedBlock GetAtLocation(Location src) {
+    public static ReinforcedBlock getAtLocation(Location src) {
         return BlockList.get(src);
     }
     
-    public void Break(Location source, int times) {
-        Break(source, times, 14);
-    }
-
-    // "nice" do damage method
-    public void Break(Location source, int times, int ticks) {
+    public void damageBlock(Location source, int times) {
         setBreaksLeft(getBreaksLeft() - times);
 
         if (destroyed) return;
 
-        DisplayNearest(source);
+        displayNearest(source);
     }
 
-    public void Destroy() {
-        Destroy(true);
+    public void destroyBlock() {
+        destroyBlock(true);
     }
 
-    public void Destroy(boolean tryDropItem) {
+    public void destroyBlock(boolean tryDropItem) {
         destroyed = true;
-        hologram.Destroy();
+        hologram.destroyHologram();
 
         if (tryDropItem) {
             Random r = new Random();
             int chance = (int)(r.nextFloat() * 100f);
-            int configChance = ConfigurationYaml.GetInt("reinforcement_block_drop_chance");
+            int configChance = ConfigurationYaml.getInt("reinforcement_block_drop_chance");
             if (chance <= configChance)
                 blockLocation.getWorld().dropItemNaturally(blockLocation, new ItemStack(materialUsed.getMaterial(), 1));
         }
@@ -85,34 +80,34 @@ public class ReinforcedBlock {
         breaksLeft = breaks;
         if (breaksLeft <= 0) {
             getLocation().getWorld().playSound(getLocation(), Sound.BLOCK_ANVIL_BREAK, 1, 0.5f);
-            Destroy();
+            destroyBlock();
         }
     }
 
-    public void Reinforce(int amountToReinforce) {
+    public void reinforceBlock(int amountToReinforce) {
         setBreaksLeft((int)Utils.clamp(getBreaksLeft() + amountToReinforce, 0, materialUsed.getMaxAllowedBreaks()));
         blockLocation.getWorld().playSound(blockLocation, Sound.BLOCK_GLASS_PLACE, 0.8f, 2);
         formatHologramName();
     }
 
     void formatHologramName() {
-        hologram.setText(Utils.GreenToRed(getBreaksLeft() + "", getBreaksLeft(), materialUsed.getMaxAllowedBreaks()));
+        hologram.setText(Utils.greenToRed(getBreaksLeft() + "", getBreaksLeft(), materialUsed.getMaxAllowedBreaks()));
     }
 
-    public void DisplayNearest(Location src) {
-        DisplayNearest(src, true);
+    public void displayNearest(Location src) {
+        displayNearest(src, true);
     }
 
-    public void DisplayNearest(Location src, boolean hide) {
-        hologram.Show();
+    public void displayNearest(Location src, boolean hide) {
+        hologram.showHologram();
         formatHologramName();
-        final Vector vec = Utils.GetClosestBlockFaceToLocationVisible(src, getLocation());
-        getHologram().SetPositionRelative(vec);
+        final Vector vec = Utils.getClosestBlockFaceToLocationVisible(src, getLocation());
+        getHologram().setPositionRelative(vec);
 
-        hologram.CancelHideDelayed();
+        hologram.cancelHideDelayed();
 
         if (hide)
-            hologram.HideDelayed(40);
+            hologram.hideHologramDelayed();
     }
 
     public int getBreaksLeft() {

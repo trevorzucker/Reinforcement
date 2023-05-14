@@ -1,12 +1,12 @@
-main: codes.zucker.Reinforcement.ReinforcementPlugin
+main: codes.zucker.reinforcement.ReinforcementPlugin
 name: Reinforcement
 version: 1.0
 api-version: 1.19
 commands:
-  ri:
+  rv:
     description: Toggles viewing of reinforced blocks
-    usage: /ri
-    permission: Reinforced.ri
+    usage: /rv
+    permission: Reinforced.rv
     permission-message: You don't have permission for that.
 
   re:

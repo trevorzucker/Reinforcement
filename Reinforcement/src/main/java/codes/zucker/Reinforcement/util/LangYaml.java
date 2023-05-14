@@ -1,4 +1,4 @@
-package codes.zucker.Reinforcement.util;
+package codes.zucker.reinforcement.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,8 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import codes.zucker.Reinforcement.ReinforcementPlugin;
+import codes.zucker.reinforcement.ReinforcementPlugin;
 
 public class LangYaml { // ConfigurationLoader, DataLoader, and LangLoader all work the same.
 
@@ -17,27 +18,26 @@ public class LangYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
     static File dataFile;
     static YamlConfiguration config;
 
-    public static void CreateFile() {
-        dataFile = new File(ReinforcementPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder() + "/lang.yml");
-        if (!dataFile.exists())
-            try {
+    public static void createFile() {
+        dataFile = new File(JavaPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder() + "/lang.yml");
+        if (!dataFile.exists()) {
+            try (FileOutputStream stream = new FileOutputStream(dataFile)) {
                 dataFile.createNewFile();
-                InputStream def = ReinforcementPlugin.getPlugin(ReinforcementPlugin.class).getResource("lang.yml");
-                FileOutputStream stream = new FileOutputStream(dataFile);
+                InputStream def = JavaPlugin.getPlugin(ReinforcementPlugin.class).getResource("lang.yml");
                 int read;
                 byte[] buffer = new byte[1024];
                 while ((read = def.read(buffer)) != -1) {
                     stream.write(buffer, 0, read);
                 }
-                stream.close();
-            } catch (IOException e) { }
+            } catch (IOException e) { LOG.severe("Failed to create lang file; {}" + e); }
+        }
     }
 
-    public static void LoadLang() {
+    public static void loadLang() {
         if (dataFile == null) {
-            dataFile = new File(ReinforcementPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder() + "/lang.yml");
+            dataFile = new File(JavaPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder() + "/lang.yml");
             if (!dataFile.exists())
-                CreateFile();
+                createFile();
         }
 
         config = YamlConfiguration.loadConfiguration(dataFile);
@@ -46,7 +46,7 @@ public class LangYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
         }
     }
 
-    public static String GetString(String key) {
-        return (String)Values.get(key);
+    public static String getString(String key) {
+        return Values.get(key);
     }
 }
