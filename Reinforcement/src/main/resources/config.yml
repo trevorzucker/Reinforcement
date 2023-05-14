@@ -1,8 +1,11 @@
-reinforcement_break_counter: 20 # How many times does a reinforced block need to be broken? (Per reinforcement level)
+reinforcement_visibility_only_show_to_owner: true # If true, visibility mode will only show blocks they themself have reinforced.
 reinforcement_explosion_strength: 8 # How many "breaks" should an explosion incur on the reinforced block? Strength lowers as explosion gets farther. 
-reinforcement_blocks_can_burn: false # Can reinforced blocks burn? If enabled, fire will take x times longer to break a block (x = reinforcement_break_counter)
-reinforcement_block: OBSIDIAN # What block is used to reinforce another? Refer to: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+reinforcement_blocks_can_burn: false # Can reinforced blocks burn? If enabled, fire will take the reinforcement level and takes that many times longer to burn.
+reinforcement_blocks: # What block(s) are used to reinforce, how many HP do they contribute per reinforce, and what's the maximum amount of "HP" allowed? Refer to: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+  - [OBSIDIAN, 10, 20]
+  - [IRON_INGOT, 5, 10]
 reinforcement_block_drop_chance: 40 # Chance of dropping [reinforcement_block] when a reinforced block is destroyed (in percent)
+reinforcement_damage_on_break_only: false # If false, we will damage the tool everytime the block is damaged. If true, it will only count towards one durability point when the item is actually broken.
 reinforcement_not_reinforceable: # What blocks cannot be reinforced? Refer to: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
   - BEDROCK
   - ENDER_PORTAL_FRAME

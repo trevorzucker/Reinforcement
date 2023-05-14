@@ -1,18 +1,17 @@
 package codes.zucker.Reinforcement;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.module.Configuration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Color;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -25,37 +24,67 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import codes.zucker.Reinforcement.entity.ReinforcedBlock;
+import codes.zucker.Reinforcement.util.ConfigurationYaml;
+import codes.zucker.Reinforcement.util.LOG;
+import codes.zucker.Reinforcement.util.Utils;
+
 public class Events implements Listener {
 
     @EventHandler
     public static void onClick(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK)
+            return;
+
         Player p = event.getPlayer();
+        
+        ReinforcedBlock reinforcedAtTarget = ReinforcedBlock.GetAtLocation(event.getClickedBlock().getLocation());
+        
 
-        PlayerInventory i = p.getInventory();
-        Material hand = i.getItemInMainHand().getType();
+        if (!Commands.reToggle.contains(p)) {
+            if (p.getGameMode() == GameMode.CREATIVE && reinforcedAtTarget != null)
+                reinforcedAtTarget.Destroy(false);
+            return;
+        }
+        
+        PlayerInventory inventory = p.getInventory();
+        Material hand = inventory.getItemInMainHand().getType();
         Block b = event.getClickedBlock();
+        
+        ReinforceMaterial reinforceMaterial = null;
+        
+        for(ReinforceMaterial mat : ReinforceMaterial.Entries) {
+            if (hand.equals(mat.getMaterial())) {
+                reinforceMaterial = mat;
+            }
+        }
 
-        if (!hand.equals(ReinforcedBlock.block))
-            return;
+        if (reinforceMaterial == null) return;
 
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK || ReinforcedBlock.GetAtLocation(event.getClickedBlock().getLocation()) != null )
-            return;
-
-        // quick check to disallow reinforcing all blacklisted blocks in the config
-        String materialName = event.getClickedBlock().getType().toString();
-        for(String s : (ArrayList<String>)ConfigurationLoader.ConfigValues.get("reinforcement_not_reinforceable")) {
-            if (materialName.contains(s) && !materialName.contains("BLOCK"))
+        if (reinforcedAtTarget != null) {
+            if (reinforcedAtTarget.getBreaksLeft() >= reinforceMaterial.getMaxAllowedBreaks()) {
+                event.setCancelled(true);
+                return;
+            }
+            if (!reinforceMaterial.getMaterial().equals(reinforcedAtTarget.getMaterialUsed().getMaterial()))
                 return;
         }
 
-        Utils.RemoveFromHand(i, ReinforcedBlock.block, 1);
+        // quick check to disallow reinforcing all blacklisted blocks in the config
+        String materialName = event.getClickedBlock().getType().toString();
+        ConfigurationYaml.GetList("reinforcement_not_reinforceable").forEach(s -> {
+            String item = (String)s;
+            if (materialName.contains(item) && !materialName.contains("BLOCK"))
+                return;
+        });
+
+        Utils.RemoveFromHand(inventory, hand, 1);
 
         Random r = new Random();
         DustOptions particle = new DustOptions(Color.GRAY, 0.5f);
@@ -65,79 +94,39 @@ public class Events implements Listener {
             p.getWorld().spawnParticle(Particle.REDSTONE, l, 5, particle);
         }
 
-        p.getWorld().playSound(b.getLocation(), Sound.BLOCK_GLASS_PLACE, 0.8f, 2);
-
-        ReinforcedBlock reinforced = new ReinforcedBlock(b, (int)ConfigurationLoader.ConfigValues.get("reinforcement_break_counter"));
-        reinforced.createArmorStandIndicators(true);
-        reinforced.displayBreaksLeft(p.getEyeLocation(), -1);
+        ReinforcedBlock reinforced = reinforcedAtTarget != null ? reinforcedAtTarget : new ReinforcedBlock(b.getLocation(), 0, reinforceMaterial, p.getUniqueId());
+        reinforced.Reinforce(reinforceMaterial.getBreaksPerReinforce());
+        reinforced.DisplayNearest(p.getLocation());
 
         event.setCancelled(true);
     }
 
-    static Map<Player, List<Block>> playerVisibleBlocks = new HashMap<Player, List<Block>>();
+    static Set<ReinforcedBlock> visibleBlocks = new HashSet<>();
 
     @EventHandler
     public static void playerMove(PlayerMoveEvent event) {
+        Set<ReinforcedBlock> visibleBlocksClone = new HashSet<>(visibleBlocks);
+        visibleBlocksClone.forEach(b -> {
+            if (b.getLocation() != null)
+                if (Utils.getPlayersNear(b.getLocation(), 5).size() == 0) {
+                    b.getHologram().HideDelayed(40);
+                    visibleBlocks.remove(b);
+                }
+        });
+
         Player p = event.getPlayer();
-        Location loc = p.getLocation();
-        List<Block> away = Utils.getNearbyBlocks(loc, 8);
-        for (Block _b : away) {
-            ReinforcedBlock b = ReinforcedBlock.GetAtLocation(_b.getLocation());
-            if (b == null || !b.indicatorsVisible())
-                continue;
-            boolean otherPlayerSees = false;
-            for (Entry<Player, List<Block>> entry : playerVisibleBlocks.entrySet()) {
-                for (Block bl : entry.getValue()) {
-                    if (bl.equals(_b))
-                        otherPlayerSees = true;
+        if (!Commands.riToggle.contains(p)) return;
+        Utils.getNearbyBlocks(p.getLocation(), 5).forEach(b -> {
+            ReinforcedBlock reinforced = ReinforcedBlock.GetAtLocation(b.getLocation());
+            if (reinforced != null) {
+                if ((ConfigurationYaml.GetBoolean("reinforcement_visibility_only_show_to_owner") && reinforced.getOwner().equals(p.getUniqueId()))
+                    || (!ConfigurationYaml.GetBoolean("reinforcement_visibility_only_show_to_owner"))) {
+                    reinforced.DisplayNearest(p.getLocation(), false);
+                    visibleBlocks.add(reinforced);
                 }
             }
-
-            if (otherPlayerSees)
-                continue;
-
-            b.removeAllIndicators(false);
-            b.clearBreaksLeft(p.getEyeLocation(), false);
-        }
-
-        boolean playerInfoMode = false;
-        for(Player pl : Commands.playerToggle) {
-            if (p.equals(pl)) {
-                playerInfoMode = true;
-                break;
-            }
-        }
-
-        if (!event.getPlayer().getInventory().getItemInMainHand().getType().equals(ReinforcedBlock.block) && !playerInfoMode) {
-            playerVisibleBlocks.remove(event.getPlayer());
-            return;
-        }
-
-        List<Block> nearby = Utils.getNearbyBlocks(loc, 5);
-
-        for (Block _b : nearby) {
-            ReinforcedBlock b = ReinforcedBlock.GetAtLocation(_b.getLocation());
-            if (b != null) {
-                if (!b.indicatorsVisible()) {
-                    b.createArmorStandIndicators(false);
-                }
-                
-                if (b.lastClearTime + 300 < System.currentTimeMillis()) {
-                    b.clearBreaksLeft(p.getEyeLocation(), true);
-                    b.displayBreaksLeft(p.getEyeLocation(), -1);
-                }
-            }
-            away.remove(_b);
-        }
-
-        playerVisibleBlocks.put(p, nearby);
-    }
-
-    @EventHandler
-    public static void switchItem(PlayerItemHeldEvent event) { // if a player switches items, update nearby ReinforcedBlock(s)
-        Player p = event.getPlayer();
-        PlayerMoveEvent e = new PlayerMoveEvent(p, p.getLocation(), p.getLocation());
-        playerMove(e);
+        });
+        
     }
 
     @EventHandler
@@ -146,14 +135,19 @@ public class Events implements Listener {
         ReinforcedBlock b = ReinforcedBlock.GetAtLocation(event.getBlock().getLocation());
         if (b != null) {
             b.Break(p.getEyeLocation(), 1);
-            if (b.GetBreaksLeft() > 0) {
-                ItemStack hand = p.getInventory().getItemInMainHand();
-                if (hand.getItemMeta() instanceof Damageable) {
-                    Damageable meta = (Damageable) hand.getItemMeta();
-                    meta.setDamage(meta.getDamage() + 1);
-                    hand.setItemMeta((ItemMeta) meta);
+            if (b.getBreaksLeft() >= 0) {
+                boolean damageOnlyOnLastBreak = ConfigurationYaml.GetBoolean("reinforcement_damage_on_break_only");
+                
+                if (!damageOnlyOnLastBreak || b.getBreaksLeft() == 0) {
+                    ItemStack hand = p.getInventory().getItemInMainHand();
+                    if (hand.getItemMeta() instanceof Damageable) {
+                        Damageable meta = (Damageable) hand.getItemMeta();
+                        meta.setDamage(meta.getDamage() + 1);
+                        hand.setItemMeta((ItemMeta) meta);
+                    }
+                    p.updateInventory();
                 }
-                p.updateInventory();
+
                 event.setCancelled(true);
             }
         }
@@ -163,7 +157,7 @@ public class Events implements Listener {
     public static void onBlockExplode(BlockExplodeEvent event) {
         List<Block> affected = event.blockList();
         Location center = event.getBlock().getLocation();
-        int maxDmg = (int)ConfigurationLoader.ConfigValues.get("reinforcement_explosion_strength");
+        int maxDmg = ConfigurationYaml.GetInt("reinforcement_explosion_strength");
         Iterator<Block> iter = affected.iterator();
         while(iter.hasNext()) {
             Block b = iter.next();
@@ -171,11 +165,11 @@ public class Events implements Listener {
             ReinforcedBlock rb = ReinforcedBlock.GetAtLocation(b.getLocation());
             if (rb == null) continue;
             iter.remove();
-            int calculatedDmg = (int)Math.floor(rb.GetLocation().distance(center));
+            int calculatedDmg = (int)Math.floor(rb.getLocation().distance(center));
             int damage = (int)Utils.clamp(maxDmg - calculatedDmg, 0, maxDmg);
-            if (rb.GetBreaksLeft() - damage <= 0) {
-                rb.GetLocation().getWorld().dropItemNaturally(rb.GetLocation(), new ItemStack(rb.GetLocation().getBlock().getType(), 1));
-                rb.GetLocation().getBlock().setType(Material.AIR);
+            if (rb.getBreaksLeft() - damage <= 0) {
+                rb.getLocation().getWorld().dropItemNaturally(rb.getLocation(), new ItemStack(rb.getLocation().getBlock().getType(), 1));
+                rb.getLocation().getBlock().setType(Material.AIR);
             }
             rb.Break(center, damage, 40);
         }
@@ -185,7 +179,7 @@ public class Events implements Listener {
     public static void onEntityExplode(EntityExplodeEvent event) {
         List<Block> affected = event.blockList();
         Location center = event.getLocation();
-        int maxDmg = (int)ConfigurationLoader.ConfigValues.get("reinforcement_explosion_strength");
+        int maxDmg = (int)ConfigurationYaml.GetInt("reinforcement_explosion_strength");
         Iterator<Block> iter = affected.iterator();
         while(iter.hasNext()) {
             Block b = iter.next();
@@ -193,11 +187,11 @@ public class Events implements Listener {
             ReinforcedBlock rb = ReinforcedBlock.GetAtLocation(b.getLocation());
             if (rb == null) continue;
             iter.remove();
-            int calculatedDmg = (int)Math.floor(rb.GetLocation().distance(center));
+            int calculatedDmg = (int)Math.floor(rb.getLocation().distance(center));
             int damage = (int)Utils.clamp(maxDmg - calculatedDmg, 0, maxDmg);
-            if (rb.GetBreaksLeft() - damage <= 0) {
-                rb.GetLocation().getWorld().dropItemNaturally(rb.GetLocation(), new ItemStack(rb.GetLocation().getBlock().getType(), 1));
-                rb.GetLocation().getBlock().setType(Material.AIR);
+            if (rb.getBreaksLeft() - damage <= 0) {
+                LOG.info("Breaking block @ + " + rb.getLocation() + "; dropping " + b.getType());
+                b.breakNaturally();
             }
             rb.Break(center, damage, 40);
         }
@@ -207,7 +201,7 @@ public class Events implements Listener {
     public static void fireSpread(BlockIgniteEvent event) {
         Block to = event.getBlock();
         ReinforcedBlock rb = ReinforcedBlock.GetAtLocation(to.getLocation());
-        boolean doFireSpread = (boolean)ConfigurationLoader.ConfigValues.get("reinforcement_blocks_can_burn");
+        boolean doFireSpread = ConfigurationYaml.GetBoolean("reinforcement_blocks_can_burn");
         if (rb != null) {
             if (!doFireSpread) {
                 event.setCancelled(true);
@@ -220,13 +214,13 @@ public class Events implements Listener {
     public static void fireDamage(BlockBurnEvent event) {
         Block to = event.getBlock();
         ReinforcedBlock rb = ReinforcedBlock.GetAtLocation(to.getLocation());
-        boolean doFireSpread = (boolean)ConfigurationLoader.ConfigValues.get("reinforcement_blocks_can_burn");
+        boolean doFireSpread = ConfigurationYaml.GetBoolean("reinforcement_blocks_can_burn");
         if (rb != null) {
             event.setCancelled(true);
             if (!doFireSpread) {
                 return;
             } else {
-                rb.Break(rb.GetLocation(), 1, 40);
+                rb.Break(rb.getLocation(), 1, 40);
             }
         }  
     }

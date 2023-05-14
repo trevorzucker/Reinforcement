@@ -1,1 +1,7 @@
-reinforcement_info_msg: "You are now in info mode, use /ri to toggle this mode off"
+reinforcement_message_prefix: "&e[Reinforcement]"
+
+reinforcement_mode_on: "&aENABLED"
+reinforcement_mode_off: "&cDISABLED"
+
+reinforcement_visibility_on: "Visibility mode &aon"
+reinforcement_visibility_off: "Visibility mode &coff"
