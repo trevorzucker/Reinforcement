@@ -6,9 +6,12 @@
 
 # Maven files
 pom_local.xml
+.classpath
+.project
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# VSCode stuff
+.settings/
+.vscode/
 
 # Package Files #
 *.jar
