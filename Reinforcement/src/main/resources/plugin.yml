@@ -1,6 +1,6 @@
 main: codes.zucker.reinforcement.ReinforcementPlugin
 name: Reinforcement
-version: 1.0
+version: 1.1
 api-version: 1.19
 commands:
   rv:
