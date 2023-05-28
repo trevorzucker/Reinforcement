@@ -21,13 +21,15 @@ public class ConfigurationYaml {
     public static void createFile() {
         configFile = new File(JavaPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder(), "config.yml");
         if (!configFile.exists()) {
-            try (FileOutputStream stream = new FileOutputStream(configFile)) {
+            try {
                 JavaPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder().mkdirs();
                 configFile.createNewFile();
                 InputStream def = JavaPlugin.getPlugin(ReinforcementPlugin.class).getResource("config.yml");
                 byte[] buffer = new byte[def.available()];
                 def.read(buffer);
+                FileOutputStream stream = new FileOutputStream(configFile);
                 stream.write(buffer);
+                stream.close();
             } catch (IOException e) { }
         }
     }

@@ -21,14 +21,16 @@ public class LangYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
     public static void createFile() {
         dataFile = new File(JavaPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder() + "/lang.yml");
         if (!dataFile.exists()) {
-            try (FileOutputStream stream = new FileOutputStream(dataFile)) {
+            try {
                 dataFile.createNewFile();
                 InputStream def = JavaPlugin.getPlugin(ReinforcementPlugin.class).getResource("lang.yml");
+                FileOutputStream stream = new FileOutputStream(dataFile);
                 int read;
                 byte[] buffer = new byte[1024];
                 while ((read = def.read(buffer)) != -1) {
                     stream.write(buffer, 0, read);
                 }
+                stream.close();
             } catch (IOException e) { LOG.severe("Failed to create lang file; {}" + e); }
         }
     }
