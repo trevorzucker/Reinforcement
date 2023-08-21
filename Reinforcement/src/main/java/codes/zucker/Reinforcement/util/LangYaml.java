@@ -23,11 +23,11 @@ public class LangYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
         if (!dataFile.exists()) {
             try {
                 dataFile.createNewFile();
-                InputStream def = JavaPlugin.getPlugin(ReinforcementPlugin.class).getResource("lang.yml");
+                InputStream inputStream = JavaPlugin.getPlugin(ReinforcementPlugin.class).getResource("lang.yml");
                 FileOutputStream stream = new FileOutputStream(dataFile);
                 int read;
                 byte[] buffer = new byte[1024];
-                while ((read = def.read(buffer)) != -1) {
+                while ((read = inputStream.read(buffer)) != -1) {
                     stream.write(buffer, 0, read);
                 }
                 stream.close();

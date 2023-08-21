@@ -16,24 +16,22 @@ public class CommandHelper { // just some stuff to make creating commands easier
     public static Map<String, Method> commands = new HashMap<>();
 
     public static void registerCommand(String command, String methodName) {
-        Method cmd = null;
+        Method commandMethod = null;
         try {
-            cmd = Commands.class.getMethod(methodName, CommandSender.class, Command.class, String.class, String[].class);
+            commandMethod = Commands.class.getMethod(methodName, CommandSender.class, Command.class, String.class, String[].class);
         } catch (NoSuchMethodException | SecurityException e) {LOG.severe("{}", e);}
-        commands.put(command, cmd);
+        commands.put(command, commandMethod);
     }
 
     public static Player autoCompleteName(String name, Player caller) {
-        Player p = null;
+        Player player = null;
 
-        for(Player pl : Bukkit.getOnlinePlayers()) {
-            if (pl.getDisplayName().contains(name)) {
-                if (caller == null || !pl.getUniqueId().equals(caller.getUniqueId())) {
-                    p = pl;
-                    break;
-                }
+        for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if ((onlinePlayer.getDisplayName().contains(name)) && (caller == null || !onlinePlayer.getUniqueId().equals(caller.getUniqueId()))) {
+                player = onlinePlayer;
+                break;
             }
         }
-        return p;
+        return player;
     }
 }

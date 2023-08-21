@@ -13,16 +13,18 @@ import codes.zucker.reinforcement.util.Utils;
 public class Commands {
     
     protected static List<Player> rvToggle = new ArrayList<>();
+    protected static List<Player> reToggle = new ArrayList<>();
+    
     public static boolean rvCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = (Player)sender;
+        Player player = (Player)sender;
 
-        if (rvToggle.contains(p)) {
-            rvToggle.remove(p);
-            Utils.sendMessage(p, LangYaml.getString("reinforcement_visibility_off"));
+        if (rvToggle.contains(player)) {
+            rvToggle.remove(player);
+            Utils.sendMessage(player, LangYaml.getString("reinforcement_visibility_off"));
         }
         else {
-            rvToggle.add(p);
-            Utils.sendMessage(p, LangYaml.getString("reinforcement_visibility_on"));
+            rvToggle.add(player);
+            Utils.sendMessage(player, LangYaml.getString("reinforcement_visibility_on"));
         }
         return true;
     }
@@ -31,17 +33,16 @@ public class Commands {
         
     }
 
-    protected static List<Player> reToggle = new ArrayList<>();
     public static boolean reCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = (Player)sender;
+        Player player = (Player)sender;
 
-        if (reToggle.contains(p)) {
-            reToggle.remove(p);
-            Utils.sendMessage(p, LangYaml.getString("reinforcement_mode_off"));
+        if (reToggle.contains(player)) {
+            reToggle.remove(player);
+            Utils.sendMessage(player, LangYaml.getString("reinforcement_mode_off"));
         }
         else {
-            reToggle.add(p);
-            Utils.sendMessage(p, LangYaml.getString("reinforcement_mode_on"));
+            reToggle.add(player);
+            Utils.sendMessage(player, LangYaml.getString("reinforcement_mode_on"));
         }
         return true;
     }

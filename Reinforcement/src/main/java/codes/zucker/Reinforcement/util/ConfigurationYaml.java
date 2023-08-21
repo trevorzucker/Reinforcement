@@ -24,9 +24,9 @@ public class ConfigurationYaml {
             try {
                 JavaPlugin.getPlugin(ReinforcementPlugin.class).getDataFolder().mkdirs();
                 configFile.createNewFile();
-                InputStream def = JavaPlugin.getPlugin(ReinforcementPlugin.class).getResource("config.yml");
-                byte[] buffer = new byte[def.available()];
-                def.read(buffer);
+                InputStream inputStream = JavaPlugin.getPlugin(ReinforcementPlugin.class).getResource("config.yml");
+                byte[] buffer = new byte[inputStream.available()];
+                inputStream.read(buffer);
                 FileOutputStream stream = new FileOutputStream(configFile);
                 stream.write(buffer);
                 stream.close();

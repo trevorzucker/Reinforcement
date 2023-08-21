@@ -18,7 +18,7 @@ import codes.zucker.reinforcement.util.LOG;
 import codes.zucker.reinforcement.util.LangYaml;
 
 public class ReinforcementPlugin extends JavaPlugin
-{    
+{
 
     @Override
     public void onEnable() {
@@ -45,7 +45,7 @@ public class ReinforcementPlugin extends JavaPlugin
     @Override
     public void onDisable() {
         DataYaml.saveDataFile();
-        Hologram.holograms.forEach(Hologram::destroyHologram);
+        Hologram.getHolograms().forEach(Hologram::destroyHologram);
     }
 
     @Override
@@ -54,8 +54,8 @@ public class ReinforcementPlugin extends JavaPlugin
             if (cmd.getName().equalsIgnoreCase(map.getKey())) {
                 try {
                     // Here's some dodgy reflection stuff...
-                    Method meth = map.getValue();
-                    meth.invoke(null, sender, cmd, label, args);
+                    Method method = map.getValue();
+                    method.invoke(null, sender, cmd, label, args);
                     return true;
                 } catch (Exception e) {
                     LOG.severe("{}", e);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
 
@@ -65,8 +64,7 @@ public class ReinforcedBlock {
         hologram.destroyHologram();
 
         if (tryDropItem) {
-            Random r = new Random();
-            int chance = (int)(r.nextFloat() * 100f);
+            int chance = (int)(Utils.random.nextInt() * 100f);
             int configChance = ConfigurationYaml.getInt("reinforcement_block_drop_chance");
             if (chance <= configChance)
                 blockLocation.getWorld().dropItemNaturally(blockLocation, new ItemStack(materialUsed.getMaterial(), 1));

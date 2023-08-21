@@ -41,15 +41,15 @@ public class DataYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
 
             Map<String, String> worldData = new HashMap<>();
 
-            for(String s : val) {
-                if (s.contains("]")) {
+            for(String string : val) {
+                if (string.contains("]")) {
 
-                    String blockData = worldConf.getString(s);
+                    String blockData = worldConf.getString(string);
 
-                    s = s.replaceAll("\\[|\\]", "");
+                    string = string.replaceAll("\\[|\\]", "");
                     blockData = blockData.replaceAll("\\[|\\]", "");
 
-                    worldData.put(s, blockData);
+                    worldData.put(string, blockData);
                 }
             }
 
@@ -78,8 +78,8 @@ public class DataYaml { // ConfigurationLoader, DataLoader, and LangLoader all w
             Map<String, String> worldBlocks = new HashMap<>();
             for(Entry<Location, ReinforcedBlock> blockEntry : ReinforcedBlock.BlockList.entrySet()) {
                 if (blockEntry.getValue().getLocation().getWorld().getName().equals(world)) {
-                    Location src = blockEntry.getValue().getLocation();
-                    String location = "[" + src.getX() + ", " + src.getY() + ", " + src.getZ() + "]";
+                    Location sourceLocation = blockEntry.getValue().getLocation();
+                    String location = "[" + sourceLocation.getX() + ", " + sourceLocation.getY() + ", " + sourceLocation.getZ() + "]";
                     String dataString = "[" + blockEntry.getValue().getBreaksLeft() + ", " + blockEntry.getValue().getMaterialUsed().getMaterial().name()
                         + ", " + blockEntry.getValue().getOwner() + "]";
                     worldBlocks.put(location, dataString);

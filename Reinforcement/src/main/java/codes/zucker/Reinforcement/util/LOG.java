@@ -32,11 +32,11 @@ public class LOG {
     }
 
     private static String parseString(String message, Object... args) {
-        message = PREFIX + message;
-        if (args == null) return message;
+        String output = PREFIX + message;
+        if (args == null) return output;
         for(Object o : args) {
-            message = message.replaceFirst("(\\{\\})", o.toString());
+            output = output.replaceFirst("(\\{\\})", o.toString());
         }
-        return message;
+        return output;
     }
 }
