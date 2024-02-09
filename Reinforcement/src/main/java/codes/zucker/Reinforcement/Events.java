@@ -135,6 +135,10 @@ public class Events implements Listener {
     public static void blockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         ReinforcedBlock block = ReinforcedBlock.getAtLocation(event.getBlock().getLocation());
+        if ((ConfigurationYaml.getBoolean("reinforcement_owner_bypass") && block.getOwner().equals(player.getUniqueId()))) {
+          block.damageBlock(player.getEyeLocation(), 2147483647);
+          return;
+        } else {
         if (block != null) {
             block.damageBlock(player.getEyeLocation(), 1);
             if (block.getBreaksLeft() >= 0) {
@@ -154,6 +158,7 @@ public class Events implements Listener {
             }
         }
     }
+  }
 
     @EventHandler
     public static void onBlockExplode(BlockExplodeEvent event) {
