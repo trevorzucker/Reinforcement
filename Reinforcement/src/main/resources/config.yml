@@ -1,4 +1,5 @@
 reinforcement_visibility_only_show_to_owner: true # If true, visibility mode will only show blocks they themself have reinforced.
+reinforcement_owner_bypass: false # If true, the owner of a block will be able to break it in one go but other players will still have to go through the reinforcement
 reinforcement_explosion_strength: 8 # How many "breaks" should an explosion incur on the reinforced block? Strength lowers as explosion gets farther. 
 reinforcement_blocks_can_burn: false # Can reinforced blocks burn? If enabled, fire will take the reinforcement level and takes that many times longer to burn.
 reinforcement_blocks: # What block(s) are used to reinforce, how many HP do they contribute per reinforce, and what's the maximum amount of "HP" allowed? Refer to: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
