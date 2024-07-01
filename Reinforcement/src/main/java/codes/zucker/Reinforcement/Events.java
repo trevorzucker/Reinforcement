@@ -80,7 +80,7 @@ public class Events implements Listener {
         for (int j = 0; j < Utils.random.nextInt(10) + 30; j++) { // fancy particles
             Location location = block.getLocation().clone();
             location.add(Utils.random.nextDouble() * 2f - 0.5f, Utils.random.nextDouble() * 2f - 0.5f, Utils.random.nextDouble() * 2f - 0.5f);
-            player.getWorld().spawnParticle(Particle.REDSTONE, location, 5, particle);
+            player.getWorld().spawnParticle(Particle.DUST, location, 5, particle);
         }
 
         ReinforcedBlock reinforced = reinforcedAtTarget != null ? reinforcedAtTarget : new ReinforcedBlock(block.getLocation(), 0, reinforceMaterial, player.getUniqueId());
