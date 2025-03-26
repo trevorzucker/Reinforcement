@@ -17,6 +17,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <sonar.organization>trevorzucker</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.projectKey=trevorzucker_Reinforcement>
   </properties>
 
   <repositories>
