@@ -12,6 +12,7 @@ pom_local.xml
 # VSCode stuff
 .settings/
 .vscode/
+.settings
 
 # Package Files #
 *.jar

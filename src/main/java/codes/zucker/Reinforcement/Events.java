@@ -28,6 +28,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.Damageable;
 
+import codes.zucker.reinforcement.commands.ReCommand;
+import codes.zucker.reinforcement.commands.RvCommand;
 import codes.zucker.reinforcement.entity.ReinforcedBlock;
 import codes.zucker.reinforcement.util.ConfigurationYaml;
 import codes.zucker.reinforcement.util.Utils;
@@ -45,7 +47,7 @@ public class Events implements Listener {
         
         ReinforcedBlock reinforcedAtTarget = ReinforcedBlock.getAtLocation(event.getClickedBlock().getLocation());
 
-        if (!Commands.reToggle.contains(player)) {
+        if (!ReCommand.getToggledPlayers().contains(player)) {
             if (player.getGameMode() == GameMode.CREATIVE && reinforcedAtTarget != null)
                 reinforcedAtTarget.destroyBlock(false);
             return;
@@ -118,7 +120,7 @@ public class Events implements Listener {
         });
 
         Player player = event.getPlayer();
-        if (!Commands.rvToggle.contains(player)) return;
+        if (!RvCommand.getToggledPlayers().contains(player)) return;
         Utils.getNearbyBlocks(player.getLocation(), 5).forEach(b -> {
             ReinforcedBlock reinforced = ReinforcedBlock.getAtLocation(b.getLocation());
             if (reinforced != null && 
