@@ -1,6 +1,6 @@
 # Reinforcement
 ### Open-Source Bukkit Plugin
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0f9006a82b314695985c99d295ca96ab)](https://app.codacy.com/gh/trevorzucker/Reinforcement/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=trevorzucker_Reinforcement&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=trevorzucker_Reinforcement)
 ### What is Reinforcement?
   Reinforcement is a plugin that I was commissioned to make.
 
